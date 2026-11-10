@@ -39,8 +39,6 @@ overlaps, and uses 2,000 paired bootstrap replicates to estimate uncertainty
 in the model difference. The site includes aggregate reports, test indices,
 and six attributed 32 × 32 CIFAR-10 test thumbnails. Keep the raw dataset,
 any secrets, and generated error-image grids out of the published repository.
-See [individual defense prep](DEFENSE.md)
-for questions to practice before submission.
 
 To rebuild the browser checkpoint and gallery after retraining, install
 `onnx==1.20.1` and run `python -m src.export_web_demo` with the same data

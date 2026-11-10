@@ -1,6 +1,7 @@
 .venv/
 /data/
 /results/*_error_analysis.png
+/DEFENSE.md
 __pycache__/
 *.py[cod]
 .env

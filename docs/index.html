@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An ES 335 study comparing HOG and SVM with MobileNetV2 on the CIFAR-10 image classification benchmark.">
+  <title>Image Classification System for Object Recognition</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23156046'/%3E%3Cpath fill='%23deede0' d='M7 7h8v8H7zm10 10h8v8h-8z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./data/study-data.js" defer></script>
+  <script src="./study.js" defer></script>
+  <script src="./data/demo-samples.js" defer></script>
+  <script src="./demo.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the study</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="#main"><span class="mark" aria-hidden="true"></span>CIFAR-10 Study</a>
+      <nav aria-label="Study sections">
+        <a href="#demo">Try it</a>
+        <a href="#data">Data</a>
+        <a href="#methods">Methods</a>
+        <a href="#results">Results</a>
+        <a href="#reproduce">Reproduce</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <p class="eyebrow">ES 335 undergraduate project</p>
+          <h1>Image Classification System for Object Recognition</h1>
+          <p class="lede">How much better does an ImageNet-pretrained MobileNetV2 recognize CIFAR-10 objects than a linear SVM trained on image gradients?</p>
+          <a class="primary-link" href="#demo">Try the classifier <span aria-hidden="true">↓</span></a>
+          <a class="hero-results-link" href="#results">Explore the test results</a>
+        </div>
+        <aside class="hero-evidence" aria-label="Study result at a glance">
+          <div class="hero-evidence-top"><span>Official test set</span><span>10,000 images</span></div>
+          <div class="mini-matrix" id="mini-matrix" aria-hidden="true"></div>
+          <div class="headline-scores">
+            <div><span>MobileNetV2</span><strong>0.9148</strong></div>
+            <div><span>HOG + SVM</span><strong>0.5415</strong></div>
+          </div>
+          <p class="small">Macro-F1 on the same held-out images</p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="shell reading">
+      <section id="demo" class="section" aria-labelledby="demo-title">
+        <p class="eyebrow">Interactive demo</p>
+        <h2 id="demo-title">Put the models to the test</h2>
+        <p>Pick a sample to compare both models instantly, or choose your own picture for a live MobileNetV2 prediction.</p>
+        <div class="demo-bench">
+          <div class="demo-toolbar">
+            <div>
+              <h3>Held-out test images</h3>
+              <p class="small">These images come from the official CIFAR-10 test split and were excluded from project training and validation.</p>
+            </div>
+            <div class="demo-upload">
+              <label for="demo-file" class="demo-upload-label">Choose a photo</label>
+              <input id="demo-file" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" aria-describedby="demo-upload-help">
+              <span id="demo-upload-help" class="small">JPG or PNG, up to 12 MB</span>
+            </div>
+          </div>
+          <div id="demo-samples" class="demo-samples" aria-label="Choose a held-out image"></div>
+          <div class="demo-workspace">
+            <figure class="demo-preview">
+              <div class="demo-image-frame"><img id="demo-image" alt="" hidden></div>
+              <figcaption id="demo-image-caption">Select a test image or choose a photo.</figcaption>
+            </figure>
+            <div class="demo-output">
+              <fieldset class="model-control" id="demo-model">
+                <legend>Sample prediction model</legend>
+                <label><input type="radio" name="demo-model" value="mobilenet_v2" checked><span id="demo-cnn-label">MobileNetV2</span></label>
+                <label><input type="radio" name="demo-model" value="hog_svm"><span>HOG + SVM</span></label>
+              </fieldset>
+              <p id="demo-status" role="status" class="demo-status">Loading the sample gallery…</p>
+              <div id="demo-prediction" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+        <p class="small">Sample scores come from the saved checkpoints. Uploaded images stay in your browser and use MobileNetV2. The first upload initializes the browser model.</p>
+        <noscript><p>Enable JavaScript to use the classifier.</p></noscript>
+      </section>
+
+      <section aria-labelledby="question-title" class="section">
+        <p class="eyebrow">Question and scope</p>
+        <h2 id="question-title">One image, one label</h2>
+        <p>Each example is one 32 × 32 RGB image with one target label from ten known categories. At prediction time, the classifier receives only the image pixels. It returns scores over the ten classes and selects the highest-scoring label.</p>
+        <p>The comparison measures the two complete pipelines on CIFAR-10. It cannot isolate how much of the gain comes from ImageNet pretraining, architecture, augmentation, or their combination.</p>
+      </section>
+
+      <section id="data" class="section" aria-labelledby="data-title">
+        <p class="eyebrow">Dataset and quality</p>
+        <h2 id="data-title">60,000 small color images</h2>
+        <p>CIFAR-10 was created by Alex Krizhevsky, Vinod Nair, and Geoffrey Hinton. It contains 6,000 labeled images per class. We keep the official test partition and use seed 42 to divide the official training partition into training and validation. The archive is downloaded from its published source or a checksum-verified mirror. The site includes aggregate results, test indices, and six attributed 32 × 32 test thumbnails. <a href="https://www.cs.toronto.edu/~kriz/cifar.html">Dataset source, download, and image gallery</a></p>
+        <div class="split-strip" aria-label="Train, validation, and test split sizes">
+          <div><strong>40,000</strong><span>Training</span></div>
+          <div><strong>10,000</strong><span>Validation</span></div>
+          <div><strong>10,000</strong><span>Official test</span></div>
+        </div>
+        <h3>Class balance across splits</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th scope="col">Class</th><th scope="col">Train</th><th scope="col">Validation</th><th scope="col">Test</th></tr></thead>
+          <tbody id="class-counts"></tbody>
+        </table></div>
+        <p id="audit-summary" class="note">The data audit checks image shape, pixel type, constant images, and exact pixel matches across the splits.</p>
+      </section>
+
+      <section id="methods" class="section" aria-labelledby="methods-title">
+        <p class="eyebrow">Preprocessing and methods</p>
+        <h2 id="methods-title">Local gradients vs. learned features</h2>
+        <div class="method-grid">
+          <article>
+            <span class="method-tag">Classical baseline</span>
+            <h3>HOG + linear SVM</h3>
+            <p>Histograms of oriented gradients summarize edge directions in local cells. Block normalization reduces the influence of contrast. A linear SVM learns a margin-based boundary for each class. This makes a compact baseline for testing how much information local shape alone provides.</p>
+            <p>We compared four cell-size and regularization combinations. The selected setting uses 4-pixel cells, 1,764 features, and <code>C = 0.1</code>. Sigmoid calibration fits the validation split so the SVM can report class probabilities.</p>
+          </article>
+          <article>
+            <span class="method-tag">Transfer learning</span>
+            <h3>MobileNetV2</h3>
+            <p>ImageNet weights provide reusable filters for visual structure. We resize to 224 × 224 to use the pretrained backbone at its expected scale and normalize with fixed ImageNet statistics. Random crops and flips apply only during training to vary position and orientation.</p>
+            <p>We train the ten-class head for two epochs, then fine-tune the last four backbone blocks and head for three. Both stages use Adam and cross-entropy. The learning rate drops from <code>0.001</code> to <code>0.0001</code>.</p>
+          </article>
+        </div>
+        <p class="small">Method references. <a href="https://ieeexplore.ieee.org/document/1467360">Dalal and Triggs, HOG</a> · <a href="https://arxiv.org/abs/1801.04381">Sandler et al., MobileNetV2</a> · <a href="https://docs.pytorch.org/vision/stable/models/generated/torchvision.models.mobilenet_v2.html">Torchvision pretrained weights</a></p>
+      </section>
+
+      <section id="evaluation" class="section" aria-labelledby="evaluation-title">
+        <p class="eyebrow">Evaluation design</p>
+        <h2 id="evaluation-title">Select settings before final scoring</h2>
+        <ol class="protocol">
+          <li><strong>Tune HOG + SVM within training.</strong> Fit on 32,000 examples and rank candidates by macro-F1 on a stratified 8,000-image holdout. Refit the winner on all 40,000 and calibrate on validation.</li>
+          <li><strong>Select the CNN checkpoint on validation.</strong> Save the epoch with the highest validation macro-F1. ImageNet normalization uses published constants, and validation and test receive deterministic transforms.</li>
+          <li><strong>Score the same official test images.</strong> Macro-F1 weights the ten class F1 scores equally and penalizes both missed detections and false alarms. Accuracy counts overall correct predictions. The test set is balanced, so per-class scores and confusion counts show which errors the two overall scores hide.</li>
+        </ol>
+        <p class="note">The first SVM test score was viewed during development before a baseline revision. The revised settings were selected using the training-only holdout above. The official benchmark is therefore a shared held-out evaluation for the final fitted models, with prior test-score exposure in the development history.</p>
+        <details>
+          <summary>Show the four HOG + SVM selection trials</summary>
+          <div class="table-wrap"><table>
+            <thead><tr><th scope="col">HOG cell</th><th scope="col">SVM C</th><th scope="col">Holdout macro-F1</th><th scope="col">Fit time</th></tr></thead>
+            <tbody id="trials"></tbody>
+          </table></div>
+        </details>
+      </section>
+
+      <section id="results" class="section explorer" aria-labelledby="results-title">
+        <p class="eyebrow">Test result explorer</p>
+        <h2 id="results-title">Where did each model make mistakes?</h2>
+        <p>Switch models, then choose an actual class from the dropdown or select a row label in the matrix. The class panel shows precision, recall, and the most frequent wrong predictions. Both matrices use the same count scale.</p>
+        <div class="controls">
+          <fieldset class="model-control">
+            <legend>Model</legend>
+            <label><input type="radio" name="model" value="mobilenet_v2" checked><span>MobileNetV2</span></label>
+            <label><input type="radio" name="model" value="hog_svm"><span>HOG + SVM</span></label>
+          </fieldset>
+          <label class="class-control">Actual class
+            <select id="actual-class" aria-controls="class-detail"></select>
+          </label>
+        </div>
+        <div id="load-status" role="status">Loading the saved benchmark results…</div>
+        <noscript><p>Enable JavaScript to switch models and inspect classes. <a href="./data/study.json">Download the underlying results</a>.</p></noscript>
+        <div id="results-content" hidden>
+          <div class="result-strip" id="model-summary" aria-live="polite"></div>
+          <div class="result-grid">
+            <div>
+              <h3>Confusion matrix</h3>
+              <p class="small" id="matrix-description">Rows show actual classes. Columns show predicted classes. Scroll the matrix on a narrow screen.</p>
+              <div class="matrix-wrap" tabindex="0" aria-label="Scrollable confusion matrix">
+                <table class="matrix" id="matrix" aria-describedby="matrix-description"></table>
+              </div>
+            </div>
+            <div id="class-detail" class="class-detail" aria-live="polite"></div>
+          </div>
+          <details>
+            <summary>Show the five highest-confidence errors</summary>
+            <p class="small">These are individual mistakes ranked by predicted-class probability. The identifiers are zero-based indices into the official test set.</p>
+            <div class="table-wrap"><table>
+              <thead><tr><th scope="col">Test index</th><th scope="col">Actual</th><th scope="col">Predicted</th><th scope="col">Probability</th></tr></thead>
+              <tbody id="errors"></tbody>
+            </table></div>
+          </details>
+        </div>
+      </section>
+
+      <section id="interpretation" class="section" aria-labelledby="interpretation-title">
+        <p class="eyebrow">Interpretation and limitations</p>
+        <h2 id="interpretation-title">The transfer model wins on this benchmark</h2>
+        <p>MobileNetV2 scored 0.9148 macro-F1 and 91.48% accuracy. HOG + SVM scored 0.5415 macro-F1 and 54.77% accuracy. That is a gain of 0.3733 macro-F1 and 36.71 percentage points of accuracy for the tested pipelines.</p>
+        <p>Finer HOG cells helped the classical baseline on its internal holdout. The winning trial reached 0.5339 macro-F1 versus 0.5082 for the original setting. Its SVM fit took about 90 seconds versus 30 seconds on the same machine and holdout protocol. The gain required a larger descriptor and a slower fit.</p>
+        <p id="uncertainty">A paired bootstrap resamples the same test examples for both models to estimate uncertainty in their score difference.</p>
+        <p>Both models most often called cats dogs. HOG + SVM made that error 170 times and MobileNetV2 83 times. MobileNetV2 also assigned more than 99% probability to several wrong answers. These cases illustrate why a large class score alone gives limited evidence of reliability on an individual image.</p>
+        <p id="sensitivity"></p>
+        <p>Each model must pick from the same ten labels, even for an unfamiliar upload. Low-resolution images can be ambiguous, and the benchmark gives no estimate of performance on new cameras, backgrounds, or classes. The bootstrap assumes the test examples are exchangeable and holds the trained weights fixed. It does not measure variability across retraining runs or new image distributions.</p>
+      </section>
+
+      <section id="refinement" class="section" aria-labelledby="refinement-title" hidden>
+        <p class="eyebrow">Follow-up experiment</p>
+        <h2 id="refinement-title">Does extra training data help?</h2>
+        <p>Both candidates started from the original MobileNetV2 checkpoint and used the same CIFAR-10 fine-tuning recipe. One first adapted the backbone on CIFAR-100 using a temporary 100-class head. The test result explorer above preserves the original study.</p>
+        <p id="refinement-summary"></p>
+        <div class="table-wrap"><table>
+          <thead><tr><th scope="col">Run</th><th scope="col">Validation macro-F1</th><th scope="col">CIFAR-10 test accuracy</th><th scope="col">CIFAR-10.1 accuracy</th></tr></thead>
+          <tbody id="refinement-runs"></tbody>
+        </table></div>
+        <p class="small">Selection used CIFAR-10 validation macro-F1. CIFAR-10.1 was reserved for scoring. The extra stage changes both the training data and the amount of training, so this comparison evaluates the complete recipes. <a href="https://github.com/modestyachts/CIFAR-10.1">CIFAR-10.1 dataset and paper</a></p>
+      </section>
+
+      <section id="reproduce" class="section" aria-labelledby="reproduce-title">
+        <p class="eyebrow">Reproduction and sources</p>
+        <h2 id="reproduce-title">Run the study from the source</h2>
+        <p>Use Python 3.11 or newer in an activated virtual environment. Run these commands from the repository root. The archived run used seed 42 and an RTX 4060 Laptop GPU for the CNN, with batch size 128 and two workers. The CPU fallback may produce small numerical differences.</p>
+        <pre><code>python -m pip install -r requirements.txt
+python -m src.dataset
+python -m src.train_svm
+python -m src.train_cnn --batch-size 128 --num-workers 2
+python -m src.evaluate --batch-size 128 --num-workers 2
+python -m src.course_report --batch-size 128 --num-workers 2</code></pre>
+        <p><a id="repository" hidden>Source repository</a> <a href="./data/study.json">Download the study results as JSON</a></p>
+        <p class="small">Dataset citation. Alex Krizhevsky, <cite>Learning Multiple Layers of Features from Tiny Images</cite>, 2009. <a href="https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf">Technical report</a></p>
+        <p class="small">AI assistance. OpenAI Codex assisted with implementing, debugging, and checking the data pipeline, models, evaluation, and interfaces, and with drafting this site. The student is responsible for reviewing the results and explaining the work in the individual defense.</p>
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="shell">Image Classification System for Object Recognition · ES 335</div></footer>
+</body>
+</html>

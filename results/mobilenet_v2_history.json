@@ -1,0 +1,102 @@
+{
+  "model": "mobilenet_v2",
+  "seed": 42,
+  "device": "cuda",
+  "mixed_precision": true,
+  "pretrained_weights": "IMAGENET1K_V2",
+  "class_names": [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
+  ],
+  "image_size": 224,
+  "batch_size": 128,
+  "num_workers": 2,
+  "fine_tune_blocks": 4,
+  "best_epoch": 5,
+  "best_validation_macro_f1": 0.9170792349339847,
+  "epochs": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "learning_rate": 0.001,
+      "train": {
+        "loss": 0.830659765625,
+        "accuracy": 0.76535
+      },
+      "validation": {
+        "loss": 0.533272216796875,
+        "accuracy": 0.8221,
+        "macro_f1": 0.8201671413672985
+      },
+      "seconds": 76.0226402999997
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "learning_rate": 0.001,
+      "train": {
+        "loss": 0.5328134765625,
+        "accuracy": 0.8245
+      },
+      "validation": {
+        "loss": 0.464586474609375,
+        "accuracy": 0.8386,
+        "macro_f1": 0.8373224255666034
+      },
+      "seconds": 30.759826299999986
+    },
+    {
+      "epoch": 3,
+      "stage": "fine_tune",
+      "learning_rate": 0.0001,
+      "train": {
+        "loss": 0.40806396484375,
+        "accuracy": 0.8594
+      },
+      "validation": {
+        "loss": 0.2963178466796875,
+        "accuracy": 0.8962,
+        "macro_f1": 0.8953810480532572
+      },
+      "seconds": 47.699471699999776
+    },
+    {
+      "epoch": 4,
+      "stage": "fine_tune",
+      "learning_rate": 0.0001,
+      "train": {
+        "loss": 0.2892076904296875,
+        "accuracy": 0.899
+      },
+      "validation": {
+        "loss": 0.2613781982421875,
+        "accuracy": 0.9099,
+        "macro_f1": 0.9096162753904329
+      },
+      "seconds": 45.81666029999906
+    },
+    {
+      "epoch": 5,
+      "stage": "fine_tune",
+      "learning_rate": 0.0001,
+      "train": {
+        "loss": 0.22925458984375,
+        "accuracy": 0.921125
+      },
+      "validation": {
+        "loss": 0.2406761962890625,
+        "accuracy": 0.9174,
+        "macro_f1": 0.9170792349339847
+      },
+      "seconds": 47.16523210000014
+    }
+  ]
+}

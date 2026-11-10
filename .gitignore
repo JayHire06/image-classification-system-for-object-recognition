@@ -1,0 +1,8 @@
+.venv/
+/data/
+/results/*_error_analysis.png
+__pycache__/
+*.py[cod]
+.env
+.env.*
+.streamlit/secrets.toml

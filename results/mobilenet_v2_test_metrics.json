@@ -1,0 +1,225 @@
+{
+  "model": "mobilenet_v2",
+  "split": "test",
+  "samples": 10000,
+  "class_names": [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
+  ],
+  "accuracy": 0.9148,
+  "macro_f1": 0.9147729926646259,
+  "per_class": {
+    "airplane": {
+      "precision": 0.9074975657254138,
+      "recall": 0.932,
+      "support": 1000
+    },
+    "automobile": {
+      "precision": 0.9604863221884499,
+      "recall": 0.948,
+      "support": 1000
+    },
+    "bird": {
+      "precision": 0.8904244817374136,
+      "recall": 0.902,
+      "support": 1000
+    },
+    "cat": {
+      "precision": 0.8467824310520939,
+      "recall": 0.829,
+      "support": 1000
+    },
+    "deer": {
+      "precision": 0.9021739130434783,
+      "recall": 0.913,
+      "support": 1000
+    },
+    "dog": {
+      "precision": 0.8695219123505976,
+      "recall": 0.873,
+      "support": 1000
+    },
+    "frog": {
+      "precision": 0.9371196754563894,
+      "recall": 0.924,
+      "support": 1000
+    },
+    "horse": {
+      "precision": 0.939918533604888,
+      "recall": 0.923,
+      "support": 1000
+    },
+    "ship": {
+      "precision": 0.9520958083832335,
+      "recall": 0.954,
+      "support": 1000
+    },
+    "truck": {
+      "precision": 0.9424603174603174,
+      "recall": 0.95,
+      "support": 1000
+    }
+  },
+  "confusion_matrix": [
+    [
+      932,
+      4,
+      19,
+      4,
+      5,
+      0,
+      0,
+      4,
+      24,
+      8
+    ],
+    [
+      10,
+      948,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      6,
+      34
+    ],
+    [
+      18,
+      0,
+      902,
+      16,
+      24,
+      8,
+      20,
+      7,
+      3,
+      2
+    ],
+    [
+      5,
+      0,
+      26,
+      829,
+      16,
+      83,
+      21,
+      10,
+      3,
+      7
+    ],
+    [
+      4,
+      2,
+      16,
+      15,
+      913,
+      10,
+      15,
+      24,
+      1,
+      0
+    ],
+    [
+      1,
+      0,
+      10,
+      79,
+      19,
+      873,
+      5,
+      11,
+      1,
+      1
+    ],
+    [
+      4,
+      0,
+      22,
+      25,
+      10,
+      11,
+      924,
+      2,
+      0,
+      2
+    ],
+    [
+      10,
+      1,
+      14,
+      8,
+      25,
+      18,
+      1,
+      923,
+      0,
+      0
+    ],
+    [
+      34,
+      5,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      954,
+      4
+    ],
+    [
+      9,
+      27,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      10,
+      950
+    ]
+  ],
+  "errors": [
+    {
+      "index": 5548,
+      "actual": "ship",
+      "predicted": "airplane",
+      "confidence": 0.99969482421875
+    },
+    {
+      "index": 4744,
+      "actual": "frog",
+      "predicted": "airplane",
+      "confidence": 0.9995265007019043
+    },
+    {
+      "index": 9380,
+      "actual": "dog",
+      "predicted": "cat",
+      "confidence": 0.9991693496704102
+    },
+    {
+      "index": 1718,
+      "actual": "airplane",
+      "predicted": "ship",
+      "confidence": 0.9991293549537659
+    },
+    {
+      "index": 378,
+      "actual": "airplane",
+      "predicted": "ship",
+      "confidence": 0.9987083673477173
+    }
+  ]
+}

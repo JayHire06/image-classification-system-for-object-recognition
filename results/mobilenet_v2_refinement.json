@@ -1,0 +1,164 @@
+{
+  "seed": 42,
+  "device": "cuda",
+  "batch_size": 128,
+  "num_workers": 2,
+  "cifar100_audit": {
+    "available": 50000,
+    "used": 49999,
+    "exact_removed": 1,
+    "perceptual_hash_removed": 0
+  },
+  "cifar100_pretraining": [
+    {
+      "loss": 2.1179262647752957,
+      "accuracy": 0.5330306606132122
+    }
+  ],
+  "cifar10_1_samples": 2000,
+  "selection_metric": "cifar10_validation_macro_f1",
+  "selected": "cifar100_transfer",
+  "runs": {
+    "original": {
+      "validation": {
+        "loss": 0.2404297607421875,
+        "accuracy": 0.9173,
+        "macro_f1": 0.916990642531491
+      },
+      "cifar10_test": {
+        "loss": 0.2483196533203125,
+        "accuracy": 0.9148,
+        "macro_f1": 0.9147729926646259
+      },
+      "cifar10_1_v6": {
+        "loss": 0.5428346557617187,
+        "accuracy": 0.824,
+        "macro_f1": 0.8237856847793472
+      }
+    },
+    "cifar10_only": {
+      "best_epoch": 3,
+      "validation": {
+        "loss": 0.19086990966796874,
+        "accuracy": 0.948,
+        "macro_f1": 0.9477818286045435
+      },
+      "epochs": [
+        {
+          "epoch": 1,
+          "train": {
+            "loss": 0.614456787109375,
+            "accuracy": 0.8853
+          },
+          "validation": {
+            "loss": 0.235799951171875,
+            "accuracy": 0.9314,
+            "macro_f1": 0.9308676717410013
+          },
+          "learning_rate": 0.00015,
+          "seconds": 178.11162580000018
+        },
+        {
+          "epoch": 2,
+          "train": {
+            "loss": 0.4948197265625,
+            "accuracy": 0.92985
+          },
+          "validation": {
+            "loss": 0.2105157470703125,
+            "accuracy": 0.942,
+            "macro_f1": 0.9415343207697194
+          },
+          "learning_rate": 0.00011999999999999999,
+          "seconds": 239.11702890000015
+        },
+        {
+          "epoch": 3,
+          "train": {
+            "loss": 0.450915966796875,
+            "accuracy": 0.948175
+          },
+          "validation": {
+            "loss": 0.19086990966796874,
+            "accuracy": 0.948,
+            "macro_f1": 0.9477818286045435
+          },
+          "learning_rate": 6.000000000000001e-05,
+          "seconds": 326.5961453000018
+        }
+      ],
+      "cifar10_test": {
+        "loss": 0.20146602783203124,
+        "accuracy": 0.9428,
+        "macro_f1": 0.9427690759358894
+      },
+      "cifar10_1_v6": {
+        "loss": 0.40099209594726565,
+        "accuracy": 0.8645,
+        "macro_f1": 0.8642715321755944
+      }
+    },
+    "cifar100_transfer": {
+      "best_epoch": 3,
+      "validation": {
+        "loss": 0.18302738037109376,
+        "accuracy": 0.9482,
+        "macro_f1": 0.9480172988958129
+      },
+      "epochs": [
+        {
+          "epoch": 1,
+          "train": {
+            "loss": 0.65864384765625,
+            "accuracy": 0.8844
+          },
+          "validation": {
+            "loss": 0.2330308837890625,
+            "accuracy": 0.9317,
+            "macro_f1": 0.9310144454007515
+          },
+          "learning_rate": 0.00015,
+          "seconds": 165.2012829999985
+        },
+        {
+          "epoch": 2,
+          "train": {
+            "loss": 0.50206240234375,
+            "accuracy": 0.927125
+          },
+          "validation": {
+            "loss": 0.20274857177734376,
+            "accuracy": 0.9433,
+            "macro_f1": 0.9429074696508634
+          },
+          "learning_rate": 0.00011999999999999999,
+          "seconds": 153.13958060000004
+        },
+        {
+          "epoch": 3,
+          "train": {
+            "loss": 0.454480810546875,
+            "accuracy": 0.947
+          },
+          "validation": {
+            "loss": 0.18302738037109376,
+            "accuracy": 0.9482,
+            "macro_f1": 0.9480172988958129
+          },
+          "learning_rate": 6.000000000000001e-05,
+          "seconds": 156.35134219999964
+        }
+      ],
+      "cifar10_test": {
+        "loss": 0.18907177734375,
+        "accuracy": 0.9442,
+        "macro_f1": 0.9441654663802126
+      },
+      "cifar10_1_v6": {
+        "loss": 0.3721639404296875,
+        "accuracy": 0.8805,
+        "macro_f1": 0.8804209850720396
+      }
+    }
+  }
+}

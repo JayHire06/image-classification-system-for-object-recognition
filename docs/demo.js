@@ -266,6 +266,7 @@
       row.append(
         heading,
         text("td", run.validation.macro_f1.toFixed(4)),
+        text("td", run.cifar10_test.macro_f1.toFixed(4)),
         text("td", `${(100 * run.cifar10_test.accuracy).toFixed(2)}%`),
         text("td", `${(100 * run.cifar10_1_v6.accuracy).toFixed(2)}%`)
       );

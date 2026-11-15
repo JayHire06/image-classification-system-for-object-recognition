@@ -90,6 +90,7 @@
         <p class="eyebrow">Question and scope</p>
         <h2 id="question-title">One image, one label</h2>
         <p>Each example is one 32 × 32 RGB image with one target label from ten known categories. At prediction time, the classifier receives only the image pixels. It returns scores over the ten classes and selects the highest-scoring label.</p>
+        <p>The explanatory variables are 3,072 pixel-channel intensities, stored as integers from 0 to 255. The target is one categorical label. We compare learned visual features with local gradients, then test whether stronger training and auxiliary supervision improve the CNN.</p>
         <p>The comparison measures the two complete pipelines on CIFAR-10. It cannot isolate how much of the gain comes from ImageNet pretraining, architecture, augmentation, or their combination.</p>
       </section>
 
@@ -108,6 +109,7 @@
           <tbody id="class-counts"></tbody>
         </table></div>
         <p id="audit-summary" class="note">The data audit checks image shape, pixel type, constant images, and exact pixel matches across the splits.</p>
+        <p>The audit found no constant images or exact duplicate rows within these splits. It cannot establish that every label is correct or rule out visually similar images. Small images can obscure the object, and backgrounds can be predictive. We retain published labels and all official test images for benchmark comparability.</p>
       </section>
 
       <section id="methods" class="section" aria-labelledby="methods-title">
@@ -119,12 +121,14 @@
             <h3>HOG + linear SVM</h3>
             <p>Histograms of oriented gradients summarize edge directions in local cells. Block normalization reduces the influence of contrast. A linear SVM learns a margin-based boundary for each class. This makes a compact baseline for testing how much information local shape alone provides.</p>
             <p>We compared four cell-size and regularization combinations. The selected setting uses 4-pixel cells, 1,764 features, and <code>C = 0.1</code>. Sigmoid calibration fits the validation split so the SVM can report class probabilities.</p>
+            <p>The descriptor uses nine orientation bins, 2 × 2 cells per block, RGB gradients, and L2-Hys normalization. A linear boundary can miss complex visual variation. The fixed descriptor is computed independently per image, so no feature statistics are learned from test images.</p>
           </article>
           <article>
             <span class="method-tag">Transfer learning</span>
             <h3>MobileNetV2</h3>
             <p>ImageNet weights provide reusable filters for visual structure. We resize to 224 × 224 to use the pretrained backbone at its expected scale and normalize with fixed ImageNet statistics. Random crops and flips apply only during training to vary position and orientation.</p>
             <p>We train the ten-class head for two epochs, then fine-tune the last four backbone blocks and head for three. Both stages use Adam and cross-entropy. The learning rate drops from <code>0.001</code> to <code>0.0001</code>.</p>
+            <p>Training crops 32 × 32 patches after padding by four pixels and flips horizontally with probability 0.5. Bilinear resizing produces 224 × 224 inputs, followed by division by 255 and ImageNet mean (0.485, 0.456, 0.406) and standard deviation (0.229, 0.224, 0.225). Evaluation uses resizing and normalization only. Upsampling fits the pretrained network's input scale but adds no image detail.</p>
           </article>
         </div>
         <p class="small">Method references. <a href="https://ieeexplore.ieee.org/document/1467360">Dalal and Triggs, HOG</a> · <a href="https://arxiv.org/abs/1801.04381">Sandler et al., MobileNetV2</a> · <a href="https://docs.pytorch.org/vision/stable/models/generated/torchvision.models.mobilenet_v2.html">Torchvision pretrained weights</a></p>
@@ -139,6 +143,7 @@
           <li><strong>Score the same official test images.</strong> Macro-F1 weights the ten class F1 scores equally and penalizes both missed detections and false alarms. Accuracy counts overall correct predictions. The test set is balanced, so per-class scores and confusion counts show which errors the two overall scores hide.</li>
         </ol>
         <p class="note">The first SVM test score was viewed during development before a baseline revision. The revised settings were selected using the training-only holdout above. The official benchmark is therefore a shared held-out evaluation for the final fitted models, with prior test-score exposure in the development history.</p>
+        <p>Precision measures how often a predicted class is correct. Recall measures how many actual examples of that class are recovered. F1 is their harmonic mean. Macro-F1 averages it across classes. Balanced test classes make accuracy equal average recall, while macro-F1 also responds to false positive predictions.</p>
         <details>
           <summary>Show the four HOG + SVM selection trials</summary>
           <div class="table-wrap"><table>
@@ -194,6 +199,7 @@
         <p>Finer HOG cells helped the classical baseline on its internal holdout. The winning trial reached 0.5339 macro-F1 versus 0.5082 for the original setting. Its SVM fit took about 90 seconds versus 30 seconds on the same machine and holdout protocol. The gain required a larger descriptor and a slower fit.</p>
         <p id="uncertainty">A paired bootstrap resamples the same test examples for both models to estimate uncertainty in their score difference.</p>
         <p>Both models most often called cats dogs. HOG + SVM made that error 170 times and MobileNetV2 83 times. MobileNetV2 also assigned more than 99% probability to several wrong answers. These cases illustrate why a large class score alone gives limited evidence of reliability on an individual image.</p>
+        <p>Try the gallery's bird, test image 1382. HOG + SVM predicts airplane with 88.47% probability, although the labeled image shows a bird. The elongated outline could contribute to that mistake, but the descriptor alone does not establish its cause. The model switch lets the reader compare the same pixels across both classifiers. The examples were selected for illustration and are not a random estimate of accuracy.</p>
         <p id="sensitivity"></p>
         <p>Each model must pick from the same ten labels, even for an unfamiliar upload. Low-resolution images can be ambiguous, and the benchmark gives no estimate of performance on new cameras, backgrounds, or classes. The bootstrap assumes the test examples are exchangeable and holds the trained weights fixed. It does not measure variability across retraining runs or new image distributions.</p>
       </section>
@@ -202,12 +208,16 @@
         <p class="eyebrow">Follow-up experiment</p>
         <h2 id="refinement-title">Does extra training data help?</h2>
         <p>Both candidates started from the original MobileNetV2 checkpoint and used the same CIFAR-10 fine-tuning recipe. One first adapted the backbone on CIFAR-100 using a temporary 100-class head. The test result explorer above preserves the original study.</p>
+        <p>CIFAR-100 supplies 50,000 training images with 100 fine labels. Its labels train auxiliary features rather than being merged into the ten-class task. Screening against all CIFAR-10 images and CIFAR-10.1 removed one exact pixel match and no additional matching difference hashes, leaving 49,999 auxiliary images. Hash checks can miss near-duplicates. CIFAR-10.1 v6 is a separate, balanced 2,000-image test set with the same ten labels, reserved for scoring.</p>
+        <p>Both candidates unfreeze the final ten blocks for three epochs. They add one RandAugment operation at magnitude five, use label smoothing of 0.05, AdamW with weight decay 0.01, and a cosine learning-rate schedule from 0.00015 toward 0.00003. The auxiliary candidate first trains for one CIFAR-100 epoch at 0.0003 with a temporary 100-class head, then restores the ten-class head. These choices target overfitting and adapt more visual features while holding the initial checkpoint and target training data fixed.</p>
         <p id="refinement-summary"></p>
         <div class="table-wrap"><table>
-          <thead><tr><th scope="col">Run</th><th scope="col">Validation macro-F1</th><th scope="col">CIFAR-10 test accuracy</th><th scope="col">CIFAR-10.1 accuracy</th></tr></thead>
+          <thead><tr><th scope="col">Run</th><th scope="col">Validation macro-F1</th><th scope="col">CIFAR-10 test macro-F1</th><th scope="col">CIFAR-10 test accuracy</th><th scope="col">CIFAR-10.1 accuracy</th></tr></thead>
           <tbody id="refinement-runs"></tbody>
         </table></div>
         <p class="small">Selection used CIFAR-10 validation macro-F1. CIFAR-10.1 was reserved for scoring. The extra stage changes both the training data and the amount of training, so this comparison evaluates the complete recipes. <a href="https://github.com/modestyachts/CIFAR-10.1">CIFAR-10.1 dataset and paper</a></p>
+        <p>The refined model reaches 0.9442 test macro-F1 and 94.42% accuracy on CIFAR-10, compared with 0.9148 and 91.48% originally. On CIFAR-10.1, accuracy improves from 82.40% to 88.05%. Stronger CIFAR-10 fine-tuning already reaches 94.28%. Auxiliary training adds 0.14 percentage points there and 1.60 on CIFAR-10.1.</p>
+        <p>This supports the selected recipe on two benchmarks, with a small validation lead over the control. One seed and one auxiliary epoch provide limited evidence about that lead's reliability. CIFAR-10.1 uses a related image source and still scores below the original test set. More training seeds and new image sources would be needed before making a deployment claim.</p>
       </section>
 
       <section id="reproduce" class="section" aria-labelledby="reproduce-title">
@@ -220,9 +230,10 @@ python -m src.train_svm
 python -m src.train_cnn --batch-size 128 --num-workers 2
 python -m src.evaluate --batch-size 128 --num-workers 2
 python -m src.course_report --batch-size 128 --num-workers 2</code></pre>
-        <p><a id="repository" hidden>Source repository</a> <a href="./data/study.json">Download the study results as JSON</a></p>
+        <p><a id="repository" href="https://github.com/JayHire06/image-classification-system-for-object-recognition">Source repository</a> · <a href="https://github.com/JayHire06/image-classification-system-for-object-recognition/blob/main/notebooks/results_review.ipynb">Results and split verification notebook</a> · <a href="https://github.com/JayHire06/image-classification-system-for-object-recognition/blob/main/results/mobilenet_v2_refinement.json">Full refinement history</a> · <a href="./data/study.json">Study results as JSON</a></p>
+        <p>The README documents downloads, setup, refinement, browser export, citations, and AI use. The saved split archive identifies the exact official dataset rows used for fitting, validation, and SVM selection. The notebook verifies these partitions and recomputes scores from saved confusion counts without downloading images. The training and evaluation scripts reproduce the experiments.</p>
         <p class="small">Dataset citation. Alex Krizhevsky, <cite>Learning Multiple Layers of Features from Tiny Images</cite>, 2009. <a href="https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf">Technical report</a></p>
-        <p class="small">AI assistance. OpenAI Codex helped implement, debug, and test the project code and draft the website.</p>
+        <p class="small">AI assistance. OpenAI Codex helped implement, debug, and verify the code, run experiments, and draft the website and documentation. The README records the disclosure and citations alongside reproduction instructions.</p>
       </section>
     </div>
   </main>

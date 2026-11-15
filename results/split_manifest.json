@@ -1,0 +1,18 @@
+{
+  "seed": 42,
+  "archive": "cifar10_split_indices.npz",
+  "sha256": "bf6d31705bc7fde26819c1ad9cb661708eec2e5a3e4cf38749b1e5dbdd6fa855",
+  "convention": {
+    "train": "Official CIFAR-10 training dataset indices in project training order.",
+    "validation": "Official CIFAR-10 training dataset indices in validation order.",
+    "test": "Official CIFAR-10 test dataset indices in original order.",
+    "svm_fit": "Official training indices for internal SVM fitting.",
+    "svm_selection": "Official training indices for internal SVM selection."
+  },
+  "regeneration": "src.dataset.load_cifar10_splits uses torch.randperm with seed 42. src.train_svm.select_and_fit_svm uses a stratified sklearn train_test_split with random_state 42.",
+  "external_source_commit": "d9982abb0bfc4846b8d13a11e66b887d946205d0",
+  "external_sha256": {
+    "cifar10.1_v6_data.npy": "2997188e5816f5bd545dc77771b6227828c28146049fcecf3fa10775474cacc6",
+    "cifar10.1_v6_labels.npy": "ae40beda001693674edc94d925ee8268cfe68905f8f9aff800c8dcdfcd6c9448"
+  }
+}

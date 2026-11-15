@@ -3,6 +3,53 @@
 This project compares a HOG + SVM baseline with a MobileNetV2 transfer learning
 model on CIFAR-10 using shared, seeded dataset splits.
 
+[Published website](https://jayhire06.github.io/image-classification-system-for-object-recognition/) · [Source repository](https://github.com/JayHire06/image-classification-system-for-object-recognition)
+
+## Verify the submission
+
+The [executed results notebook](notebooks/results_review.ipynb) verifies
+split membership and recomputes original macro-F1 and accuracy from saved
+confusion matrices. It also compares all refinement runs. It requires NumPy
+and the Python standard library. For interactive execution, install Jupyter
+with `python -m pip install jupyterlab` and open `jupyter lab` here.
+
+[`results/cifar10_split_indices.npz`](results/cifar10_split_indices.npz)
+stores exact indices in official CIFAR-10 dataset order.
+[`results/split_manifest.json`](results/split_manifest.json) documents
+the conventions and checksum. The SVM fit and selection arrays contain
+32,000 and 8,000 official training indices. Their union is the 40,000-row
+training split.
+
+The original per-class reports are in `results/*_test_metrics.json`.
+The refinement report contains all epoch metrics and aggregate held-out
+scores for each candidate. The original and selected refined checkpoints
+are included. Intermediate candidate checkpoints were not retained.
+Rerunning refinement regenerates those candidates. Five-error records
+are in the original test reports, and `src.evaluate` regenerates the grids.
+
+## AI-use disclosure and citations
+
+OpenAI Codex assisted with implementation, debugging, verification,
+experiment execution, and drafting the website and documentation. The
+reports contain measured results from the included code. Students should
+review the results and explain the choices in their submission.
+
+- Alex Krizhevsky, *Learning Multiple Layers of Features from Tiny Images*,
+  2009. [Report](https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
+  and [CIFAR datasets](https://www.cs.toronto.edu/~kriz/cifar.html).
+- Navneet Dalal and Bill Triggs, *Histograms of Oriented Gradients for Human
+  Detection*, 2005. [Paper](https://doi.org/10.1109/CVPR.2005.177).
+- Mark Sandler et al., *MobileNetV2: Inverted Residuals and Linear
+  Bottlenecks*, 2018. [Paper](https://arxiv.org/abs/1801.04381).
+- Benjamin Recht et al., *Do CIFAR-10 Classifiers Generalize to CIFAR-10?*,
+  2018. [Paper](https://arxiv.org/abs/1806.00451) and
+  [CIFAR-10.1 release](https://github.com/modestyachts/CIFAR-10.1).
+- [Torchvision pretrained weights](https://docs.pytorch.org/vision/stable/models/generated/torchvision.models.mobilenet_v2.html),
+  [scikit-image HOG](https://scikit-image.org/docs/stable/api/skimage.feature.html#skimage.feature.hog),
+  and [scikit-learn calibration](https://scikit-learn.org/stable/modules/calibration.html).
+- Browser inference uses ONNX Runtime Web 1.22.0. Its license and third-party
+  notices are in [`docs/vendor/`](docs/vendor/).
+
 ## ES 335 project website
 
 The static site in [`docs/`](docs/) is the course submission deliverable.
